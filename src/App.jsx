@@ -7,9 +7,9 @@ function App() {
   const [imputValue, setImputValue] = useState("");
   const [taskList, setTaskList] = useState([]);
 
-  const notifyTaskAdded = () => toast.success("Tarea Agregada");
-  const notifyTaskEmpty = () => toast.error("Debes ingresar una tarea para eliminarla");
-  const notifyTaskDeleted = () => toast.error("Tarea eliminada");
+  const notifyTaskAdded = () => toast.success("Added task");
+  const notifyTaskEmpty = () => toast.error("You must enter a task to delete it");
+  const notifyTaskDeleted = () => toast.error("Deleted task");
 
   const handlePressKey = (e) => {
     if (imputValue === "" && e.key === "Enter") {

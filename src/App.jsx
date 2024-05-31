@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [imputValue, setImputValue] = useState("");
+  const [taskList, setTaskList] = useState([]);
+
+  const notifyTaskAdded = () => toast.success("Tarea Agregada");
+  const notifyTaskEmpty = () => toast.error("Debes ingresar una tarea para eliminarla");
+  const notifyTaskDeleted = () => toast.error("Tarea eliminada");
+
+  const handlePressKey = (e) => {
+    if (imputValue === "" && e.key === "Enter") {
+      notifyTaskEmpty();
+      return;
+    }
+
+    if (e.key === "Enter") {
+      setTaskList([...taskList, imputValue]);
+      notifyTaskAdded();
+      setImputValue("");
+      return;
+    }
+  };
+
+  const handleDeleteTask = (index) => {
+    setTaskList(taskList.filter((task, i) => i !== index));
+    notifyTaskDeleted();
+    return;
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="container">
+        <h1>todos</h1>
+        <div className="container-list">
+          <ul>
+            <li>
+              <input
+                type="text"
+                placeholder={taskList.length === 0 ? "There are no pending tasks" : "What needs to be done?"}
+                onChange={(e) => setImputValue(e.target.value)}
+                value={imputValue}
+                onKeyDown={handlePressKey}
+              />
+            </li>
+            {taskList.map((task, index) => (
+              <li key={index}>
+                {task}
+                <i className="fa-solid fa-trash" onClick={() => handleDeleteTask(index)}></i>
+              </li>
+            ))}
+            <li className="li-final">{taskList.length} Tareas pendientes</li>
+          </ul>
+          <ToastContainer />
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

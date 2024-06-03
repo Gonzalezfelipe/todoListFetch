@@ -4,6 +4,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+   
+  const createNewUser = () => {
+    
+  }
+
   const [imputValue, setImputValue] = useState("");
   const [taskList, setTaskList] = useState([]);
 

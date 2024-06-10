@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const [imputValue, setImputValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [taskList, setTaskList] = useState([]);
 
   const createNewUser = () => {
@@ -45,20 +45,17 @@ function App() {
     allTask();
   }, []);
 
-  const deleteUser = (e) => {
-    const response = fetch(
-      "https://playground.4geeks.com/todo/users/gonzalezfelipe",
-      {
-        method: "DELETE",
-      }
-    ).then((response) => {
+  const deleteUser = () => {
+    fetch("https://playground.4geeks.com/todo/users/gonzalezfelipe", {
+      method: "DELETE",
+    }).then((response) => {
       console.log(response);
-      allTask();
+      setTaskList([]);
     });
   };
 
   const createTodo = async () => {
-    if (imputValue === "") {
+    if (inputValue === "") {
       notifyTaskEmpty();
       return;
     }
@@ -71,7 +68,7 @@ function App() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            label: imputValue,
+            label: inputValue,
             is_done: false,
           }),
         }
@@ -80,9 +77,9 @@ function App() {
         console.log("Error al crear las tareas");
       } else {
         const data = await response.json();
-        setTaskList([...taskList, data]); // Actualizar la lista de tareas
+        setTaskList((prevTaskList) => [...prevTaskList, data]);
         notifyTaskAdded();
-        setImputValue("");
+        setInputValue("");
       }
     } catch (error) {
       console.error("Error al crear las tareas", error);
@@ -99,10 +96,23 @@ function App() {
     }
   };
 
-  const handleDeleteTask = (index) => {
-    setTaskList(taskList.filter((task, i) => i !== index));
-    notifyTaskDeleted();
-    return;
+  const handleDeleteTask = async (id) => {
+    try {
+      const response = await fetch(
+        `https://playground.4geeks.com/todo/todos/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        console.log("Error al eliminar la tarea");
+      } else {
+        setTaskList((prevTaskList) => prevTaskList.filter((task) => task.id !== id));
+        notifyTaskDeleted();
+      }
+    } catch (error) {
+      console.error("Error al eliminar la tarea", error);
+    }
   };
 
   return (
@@ -121,18 +131,18 @@ function App() {
                     ? "There are no pending tasks"
                     : "What needs to be done?"
                 }
-                onChange={(e) => setImputValue(e.target.value)}
-                value={imputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                value={inputValue}
                 onKeyDown={handlePressKey}
               />
             </li>
             {taskList &&
-              taskList.map((task, index) => (
-                <li key={index}>
+              taskList.map((task) => (
+                <li key={task.id}>
                   {task.label}
                   <i
                     className="fa-solid fa-trash"
-                    onClick={() => handleDeleteTask(index)}
+                    onClick={() => handleDeleteTask(task.id)}
                   ></i>
                 </li>
               ))}
